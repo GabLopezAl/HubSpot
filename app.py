@@ -8,10 +8,7 @@ ACCESS_TOKEN = os.environ.get('HUBSPOT_ACCESS_TOKEN')
 HEADERS = {'Authorization': f'Bearer {ACCESS_TOKEN}', 'Content-Type': 'application/json'}
 
 # --- CONFIGURACIÓN TÉCNICA FINAL ---
-# Usamos el nombre calificado con tu Portal ID
 OBJETO_EQUIPOS = "p49651985_equipos" 
-
-# Nombres de propiedades confirmados en tus logs y capturas
 PROP_TICKET_SN = "numero_de_serie" 
 PROP_EQUIPO_SN = "n_mero_de_serie" 
 # ------------------------------------
@@ -24,9 +21,7 @@ def hubspot_webhook():
         prop_name = event.get('propertyName')
         sn_value = event.get('propertyValue')
 
-        # Verificamos cambio en el ticket
         if prop_name == PROP_TICKET_SN and sn_value:
-            print(f"DEBUG: Buscando Equipo con SN {sn_value} en {OBJETO_EQUIPOS}")
             vincular_equipo(ticket_id, sn_value)
 
     return jsonify({"status": "ok"}), 200
@@ -39,27 +34,24 @@ def vincular_equipo(ticket_id, sn_value):
     }
     
     resp = requests.post(search_url, headers=HEADERS, json=search_body)
-    
-    if resp.status_code != 200:
-        print(f"❌ ERROR EN BÚSQUEDA: {resp.text}")
-        return
-
     results = resp.json().get('results', [])
+
     if results:
         equipo_id = results[0]['id']
-        print(f"✅ ¡Equipo encontrado! ID: {equipo_id}. Intentando asociar...")
+        print(f"✅ Equipo encontrado: {equipo_id}. Asociando...")
         
-        # 2. Asociar (Usamos el mismo nombre calificado para el objeto destino)
-        assoc_url = f"https://api.hubapi.com/crm/v3/objects/tickets/{ticket_id}/associations/{OBJETO_EQUIPOS}/{equipo_id}/ticket_to_equipo"
+        # 2. EL CAMBIO MÁGICO: Usamos la API v4 con 'default'
+        # Esto evita tener que saber el nombre interno de la asociación
+        assoc_url = f"https://api.hubapi.com/crm/v4/objects/tickets/{ticket_id}/associations/default/{OBJETO_EQUIPOS}/{equipo_id}"
         
         r_assoc = requests.put(assoc_url, headers=HEADERS)
         
         if r_assoc.status_code in [200, 201]:
-            print(f"🔥 ¡ÉXITO TOTAL! Ticket {ticket_id} vinculado a Equipo {equipo_id}")
+            print(f"🔥 ¡LOGRADO! Ticket {ticket_id} vinculado a Equipo {equipo_id}")
         else:
-            print(f"❌ ERROR EN ASOCIACIÓN: {r_assoc.text}")
+            print(f"❌ Error final de asociación: {r_assoc.text}")
     else:
-        print(f"⚠️ No se encontró ningún equipo con SN: {sn_value}")
+        print(f"⚠️ No se encontró el equipo con SN: {sn_value}")
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
