@@ -13,7 +13,7 @@ HEADERS = {
 
 # --- VALORES CONFIRMADOS POR TUS CAPTURAS ---
 OBJETO_EQUIPOS = "equipos" 
-PROP_NUM_SERIE = "n_mero_de_serie" 
+PROP_NUM_SERIE = "numero_de_serie" 
 # --------------------------------------------
 
 @app.route('/webhook', methods=['POST'])
@@ -65,7 +65,7 @@ def vincular_equipo(ticket_id, sn_value):
         else:
             print(f"Error de API: {r_assoc.text}")
     else:
-        print(f"⚠️ No se encontró el equipo con SN: {sn_value}")
+        print(f"No se encontró el equipo con SN: {sn_value}")
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
