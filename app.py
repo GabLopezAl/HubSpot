@@ -61,9 +61,9 @@ def vincular_equipo(ticket_id, sn_value):
         r_assoc = requests.put(assoc_url, headers=HEADERS)
         
         if r_assoc.status_code in [200, 201]:
-            print(f"✅ Éxito: Ticket {ticket_id} asociado a Equipo {equipo_id}")
+            print(f"Éxito: Ticket {ticket_id} asociado a Equipo {equipo_id}")
         else:
-            print(f"❌ Error de API: {r_assoc.text}")
+            print(f"Error de API: {r_assoc.text}")
     else:
         print(f"⚠️ No se encontró el equipo con SN: {sn_value}")
 
