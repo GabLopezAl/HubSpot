@@ -7,8 +7,7 @@ app = Flask(__name__)
 ACCESS_TOKEN = os.environ.get('HUBSPOT_ACCESS_TOKEN')
 HEADERS = {'Authorization': f'Bearer {ACCESS_TOKEN}', 'Content-Type': 'application/json'}
 
-#OBJETO_EQUIPOS = "p49651985_equipos" 
-OBJETO_EQUIPOS = "equipos" 
+OBJETO_EQUIPOS = "p49651985_equipos" 
 PROP_TICKET_NS = "numero_de_serie" 
 PROP_EQUIPO_NS = "n_mero_de_serie" 
 
